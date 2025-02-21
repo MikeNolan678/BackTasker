@@ -1,4 +1,4 @@
-using BackTasker.Service;
+using BackTasker.Worker;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
