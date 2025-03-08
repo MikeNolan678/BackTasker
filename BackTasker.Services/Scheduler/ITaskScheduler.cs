@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using BackTasker.Core;
 
-namespace BackTasker.Scheduler.Schedule;
+namespace BackTasker.Services.Scheduler;
 
 /// <summary>
 /// Enqueue, schedule, or schedule a recurring background task.
@@ -29,8 +29,8 @@ public interface ITaskScheduler
     /// Schedules a task to be performed on the specified schedule.
     /// </summary>
     /// <param name="method">The method to perform.</param>
-    /// <param name="schedule">The schedule to apply to the recurring task.</param>
+    /// <param name="recurringSchedule">The schedule to apply to the recurring task.</param>
     /// <param name="priority">The priority of the task.</param>
     /// <returns>A task.</returns>
-    Task Recurring(Expression<Action> method, RecurringSchedule schedule, TaskPriority priority);
+    Task Recurring(Expression<Action> method, RecurringSchedule recurringSchedule, TaskPriority priority);
 }

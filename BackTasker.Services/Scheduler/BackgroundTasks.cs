@@ -2,7 +2,7 @@
 using BackTasker.Core;
 using Task = System.Threading.Tasks.Task;
 
-namespace BackTasker.Scheduler.Schedule;
+namespace BackTasker.Services.Scheduler;
 
 /// <summary>
 /// Enqueue, schedule, or schedule a recurring background task.

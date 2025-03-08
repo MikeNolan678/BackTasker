@@ -2,7 +2,7 @@
 using BackTasker.Core;
 using BackTasker.Data.TaskStorage;
 
-namespace BackTasker.Scheduler.Schedule;
+namespace BackTasker.Services.Scheduler;
 
 /// <summary>
 /// Enqueue, schedule, or schedule a recurring background task.
@@ -49,12 +49,14 @@ internal sealed class TaskScheduler : ITaskScheduler
     /// Schedules a task to be performed on the specified schedule.
     /// </summary>
     /// <param name="method">The method to perform.</param>
-    /// <param name="schedule">The schedule to apply to the recurring task.</param>
+    /// <param name="recurringSchedule">The recurring schedule to apply to the recurring task.</param>
     /// <param name="priority">The priority of the task.</param>
     /// <returns>A task.</returns>
-    public async Task Recurring(Expression<Action> method, RecurringSchedule schedule, TaskPriority priority)
+    public async Task Recurring(Expression<Action> method, RecurringSchedule recurringSchedule, TaskPriority priority)
     {
         BackgroundTask task = GenerateBackgroundTask(BackgroundTaskType.Recurring, method, priority);
+        
+        task.RecurringSchedule = recurringSchedule;
         
         await _taskStorage.Save(task);
     }
@@ -80,9 +82,10 @@ internal sealed class TaskScheduler : ITaskScheduler
             Arguments = methodCall.Arguments
                 .Select(arg => Expression.Lambda(arg).Compile().DynamicInvoke()?.ToString() ?? "null")
                 .ToArray(), // TODO: Improve this logic to handle more complex types, such as objects.
-            BackgroundTaskStatus = BackgroundTaskStatus.Queued,
+            BackgroundTaskStatus = BackgroundTaskStatus.Waiting,
             Id = Guid.NewGuid(),
-            Priority = priority
+            Priority = priority,
+            CreatedDateUtc = DateTime.UtcNow
         };
     }
 }

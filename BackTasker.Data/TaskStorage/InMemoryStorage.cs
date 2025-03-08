@@ -1,4 +1,5 @@
-﻿using BackTasker.Core;
+﻿using System.Collections.Concurrent;
+using BackTasker.Core;
 
 namespace BackTasker.Data.TaskStorage;
 
@@ -7,8 +8,7 @@ namespace BackTasker.Data.TaskStorage;
 /// </summary>
 public class InMemoryStorage : ITaskStorage
 {
-    
-    private readonly Dictionary<Guid, BackgroundTask> _tasks = new();
+    private readonly ConcurrentDictionary<Guid, BackgroundTask> _tasks = new();
     
     public InMemoryStorage()
     {
@@ -17,14 +17,19 @@ public class InMemoryStorage : ITaskStorage
     
     public Task Save(BackgroundTask backgroundTask)
     {
-        _tasks.Add(backgroundTask.Id ?? Guid.NewGuid(), backgroundTask);
+        if (_tasks.TryAdd(backgroundTask.Id ?? Guid.NewGuid(), backgroundTask) == false)
+        {
+            Console.WriteLine("Failed to save task.");
+        }
         
         return Task.CompletedTask;
     }
     
-    public Task<IEnumerable<BackgroundTask>> LoadQueuedTasks()
+    public Task<IEnumerable<BackgroundTask>> LoadWaitingTasks()
     {
-        return Task.FromResult(_tasks.Values.Where(t => t.BackgroundTaskStatus == BackgroundTaskStatus.Queued));
+        var waitingTasks = _tasks.Values.Where(t => t.BackgroundTaskStatus == BackgroundTaskStatus.Waiting);
+        
+        return Task.FromResult(waitingTasks);
     }
     
     public Task<IEnumerable<BackgroundTask>> LoadCompletedTasks()

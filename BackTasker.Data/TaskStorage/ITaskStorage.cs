@@ -13,9 +13,9 @@ public interface ITaskStorage
     Task Save(BackgroundTask backgroundTask);
     
     /// <summary>
-    /// Load queued tasks.
+    /// Load waiting tasks.
     /// </summary>
-    Task<IEnumerable<BackgroundTask>> LoadQueuedTasks();
+    Task<IEnumerable<BackgroundTask>> LoadWaitingTasks();
     
     /// <summary>
     /// Load Completed tasks.
